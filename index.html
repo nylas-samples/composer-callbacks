@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Composer HTML Demo</title>
+    <!-- Load the composer javascript file -->
+    <script src="https://unpkg.com/@nylas/components-composer"></script>
+  </head>
+
+  <body>
+    <!-- Add composer to place where you prefer -->
+    <nylas-composer
+      show_header="true"
+      show_subject="true"
+      theme="dark"
+      show_editor_toolbar="true"
+    ></nylas-composer>
+
+    <!-- Customize -->
+    <script>
+      // Select element by using querySelector or by using getElementById
+      const el = document.querySelector("nylas-composer");
+
+      // Called every time message data is changed
+      el.change = (msg) => console.log("message changed", msg);
+
+      // Set initial values
+      el.value = {
+        from: [
+          {
+            name: "Luka Developer",
+            email: "luka@test.com"
+          }
+        ],
+        to: [
+          {
+            name: "Dan Developer",
+            email: "dan@test.com"
+          }
+        ],
+        subject: "Awesome email",
+        body: "Hello from Nylas!"
+      };
+
+      // Pre-fill "from" field autocomplete (can be array or function that returns results)
+      el.from = [
+        { id: 1, email: "Tia30@hotmail.com" },
+        { id: 2, email: "Obie_Stokes@hotmail.com" },
+        { id: 3, email: "Mikayla.Jaskolski85@gmail.com" },
+        { id: 4, email: "Jacquelyn65@hotmail.com" },
+        { id: 5, email: "Dee57@hotmail.com" }
+      ];
+
+      // Pre-fill "to" field autocomplete (can be array or function that returns results)
+      el.to = (term) => {
+        return fetch(`https://jsonplaceholder.typicode.com/users`)
+          .then((res) => res.json())
+          .then((res) => {
+            return res
+              .map((item) => ({ name: item.name, email: item.email }))
+              .filter((item) =>
+                item.name.toLowerCase().includes(term.toLowerCase())
+              );
+          })
+          .catch((err) => Promise.resolve([]));
+      };
+
+      // Use custom callbacks, implement send function
+      el.send = async (data) => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            return resolve({ success: true });
+          }, 250);
+        });
+      };
+
+      // Use after send hook
+      el.afterSendSuccess = async (response) => {
+        el.close(); // Hide the composer after sending
+      };
+    </script>
+  </body>
+</html>
